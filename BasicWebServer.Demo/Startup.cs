@@ -7,26 +7,16 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using BasicWebServer.Server;
-using BasicWebServer.Server.HTTP;
-using BasicWebServer.Server.Responses;
 using BasicWebServer.Demo.Controllers;
-using BasicWebServer.Server.Routing;
+using BasicWebServer.Server.HTTP;
 
 namespace BasicWebServer.Demo
 {
     public class Startup
     {
-        private const string HtmlForm = @"<form action='/HTML' method='POST'>
-            Name: <input type='text' name='Name'/>
-            Age: <input type='number' name ='Age'/>
-            <input type='submit' value ='Save' />
-        </form>";
+        
 
-        private const string DownloadForm = @"<form action='/Content' method='POST'>
-                <input type='submit' value ='Download Sites Content' /> 
-            </form>";
-
-        private const string FileName = "content.txt";
+        
 
         private const string LoginForm = @"<form action='/Login' method='POST'>
                 Username: <input type='text' name='Username'/>
@@ -40,15 +30,16 @@ namespace BasicWebServer.Demo
 
         public static async Task Main()
         {
+
             await new HttpServer(routes => routes
-               .MapGet<HomeController>("/", c => c.Index()))
-               //.MapGet<HomeController>("/Redirect", c => c.Redirect())
-               //.MapGet<HomeController>("/HTML", c => c.Html())
-               //.MapPost<HomeController>t("/HTML", c => c.HtmlFormPost())
-               //.MapGet<HomeController>("/Content", c => c.Content())
+               .MapGet<HomeController>("/", c => c.Index())
+               .MapGet<HomeController>("/Redirect", c => c.Redirect())
+               .MapGet<HomeController>("/HTML", c => c.Html())
+               .MapPost<HomeController>("/HTML", c => c.HtmlFormPost())
+               .MapGet<HomeController>("/Content", c => c.Content()))
                //.MapPost<HomeController>t("/Content", c => c.DownloadContent())
                //.MapGet<HomeController>("/Cookies", c => c.Cookies())
-               //.MapGet<HomeController>("/Session", c => c.Session()))
+               //.MapGet<HomeController>("/Session", c => c.Session())
                //.MapGet<HomeController>("/Login", new HtmlResponse(Startup.LoginForm))
                //.MapPost<HomeController>t("/Login", new HtmlResponse("", Startup.LoginAction))
                //.MapGet<HomeController>("/Logout", new HtmlResponse("", Startup.LogoutAction))

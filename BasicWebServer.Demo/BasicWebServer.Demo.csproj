@@ -7,17 +7,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BasicWebServer.Server\BasicWebServer.Server.csproj" />
+	  <Content Include="Views\**\*.*">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Home\HtmlFormPost.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="content.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Views\" />
   </ItemGroup>
 
 </Project>

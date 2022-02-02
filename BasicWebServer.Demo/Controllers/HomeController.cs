@@ -2,9 +2,12 @@
 using BasicWebServer.Server.HTTP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
+using System.Linq;
+using System.Web;
+using BasicWebServer.Demo.Models;
 
 namespace BasicWebServer.Demo.Controllers
 {
@@ -27,21 +30,78 @@ namespace BasicWebServer.Demo.Controllers
         {
 
         }
+        
+        private static async Task<string> DownloadWebSiteContent(string url)
+        {
+            var httpClient = new HttpClient();
+            using (httpClient)
+            {
+                var response = await httpClient.GetAsync(url);
+
+                var html = await response.Content.ReadAsStringAsync();
+
+                return html.Substring(0, 2000);
+            }
+        }
 
         public Response Index() => Text("Hello from the server!");
         public Response Redirect() => Redirect("https://softuni.org/");
-        public Response Html() => Html(HtmlForm);
+        public Response Html() => View();
+        public Response Content() => View();
+        public Response DownloadContent() => File(FileName);
+        public Response Cookies()
+        {
+            if(this.Request.Cookies.Any(c=>c.Name!=
+            BasicWebServer.Server.HTTP.Session.SessionCookieName))
+            {
+                var cookieText = new StringBuilder();
+                cookieText.AppendLine("<h1>Cookies</h1>");
+
+                cookieText.Append("<table border='1'><tr><th>Name</th><tr>Value</th></tr>");
+
+                foreach (var cookie in Request.Cookies)
+                {
+                    cookieText.Append("<tr>");
+                    cookieText.Append($"<td>{HttpUtility.HtmlEncode(cookie.Name)}</td>");
+                    cookieText.Append($"<td>{HttpUtility.HtmlEncode(cookie.Value)}</td>");
+                    cookieText.Append("<tr>");
+                }
+
+                cookieText.Append("</table>");
+                return Html(cookieText.ToString());
+            }
+            var cookies = new CookieCollection();
+            cookies.Add("My-Cookie", "My-Cookie");
+            cookies.Add("My-Second-Cookie", "My-Second-Cookie");
+            return Html("<h1>Cookies set!</h1>");
+        }
+        public Response Session()
+        {
+            string currentDateKey = "CurrentDate";
+            var sessionExists = Request.Session.ContainsKey(currentDateKey);
+
+            if (sessionExists)
+            {
+                var currentDate = Request.Session[currentDateKey];
+                return Text($"Stored date: {currentDate}!");
+            }
+
+            return Text($"Current date stored!");
+        }
+
         public Response HtmlFormPost()
         {
-            string formData = string.Empty;
-
-            foreach (var (key,value) in Request.Form)
+            var name = this.Request.Form["Name"];
+            var age = this.Request.Form["Age"];
+            var model = new FormViewModel()
             {
-                formData += $"{key} - {value}";
-                formData += Environment.NewLine;
-            }
-            return Text(formData);
+
+                Name = name,
+
+                Age = int.Parse(age)
+            };
+            return View(model);
         }
-        public Response Content() => Html(DownloadForm);    
+
     }
 }
